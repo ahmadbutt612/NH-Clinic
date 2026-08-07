@@ -1,5 +1,5 @@
 {
-  "name": "site-creator-vinext-starter",
+  "name": "nh-gyne-clinic",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -11,15 +11,19 @@
     "start": "vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "supabase:prepare": "node --env-file-if-exists=.env.local scripts/prepare-supabase.mjs",
+    "supabase:setup": "node --env-file-if-exists=.env.local scripts/setup-supabase.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
     "drizzle-orm": "0.45.2",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "^4.20260702.1",
     "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "16.2.6",
     "@tailwindcss/postcss": "4.2.1",
@@ -35,6 +39,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.4.0",
     "react-server-dom-webpack": "19.2.6",
+    "supabase": "^2.112.0",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.3",
