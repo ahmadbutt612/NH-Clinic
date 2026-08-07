@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { dirname, join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { prepareMigration } from "./prepare-supabase.mjs";
 
@@ -9,12 +10,21 @@ function required(name) {
 }
 
 function runSupabase(args, options = {}) {
-  const command = process.platform === "win32" ? "npx.cmd" : "npx";
-  const result = spawnSync(command, ["supabase", ...args], {
+  const isWindows = process.platform === "win32";
+  const command = isWindows
+    ? process.execPath
+    : "npx";
+  const commandArgs = isWindows
+    ? [join(dirname(process.execPath), "node_modules", "npm", "bin", "npx-cli.js"), "supabase", ...args]
+    : ["supabase", ...args];
+  const result = spawnSync(command, commandArgs, {
     stdio: options.quiet ? "ignore" : "inherit",
     env: process.env,
     shell: false,
   });
+  if (result.error && !options.quiet) {
+    console.error(`Could not start Supabase CLI: ${result.error.message}`);
+  }
   return result.status === 0;
 }
 

@@ -9,6 +9,10 @@ const migrationPath = resolve(
   projectRoot,
   "supabase/migrations/20260808000000_nh_clinic_schema.sql",
 );
+const adminSyncMigrationPath = resolve(
+  projectRoot,
+  "supabase/migrations/20260808000001_sync_doctor_admins.sql",
+);
 
 function required(name) {
   const value = process.env[name]?.trim();
@@ -39,6 +43,23 @@ export async function prepareMigration() {
 
   await mkdir(dirname(migrationPath), { recursive: true });
   await writeFile(migrationPath, migration, "utf8");
+  const adminSyncMigration = `begin;
+
+delete from public.doctor_admins
+where doctor_id in (
+  '11111111-1111-4111-8111-111111111111',
+  '22222222-2222-4222-8222-222222222222'
+);
+
+insert into public.doctor_admins (doctor_id, email)
+values
+  ('11111111-1111-4111-8111-111111111111', '${sqlLiteral(umarEmail)}'),
+  ('22222222-2222-4222-8222-222222222222', '${sqlLiteral(sofiaEmail)}')
+on conflict (doctor_id, email) do nothing;
+
+commit;
+`;
+  await writeFile(adminSyncMigrationPath, adminSyncMigration, "utf8");
   return migrationPath;
 }
 
